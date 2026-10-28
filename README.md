@@ -7,6 +7,16 @@ A dark cinematic digital sculpture exhibition for Asifur Rahman Bhuiyan.
 Run `node serve.mjs` from this directory, then open http://127.0.0.1:4173.
 The checked-in `dist/` directory is the complete static website. No build step or package installation is required to serve it. The package lock records the Three.js version used to produce the vendored browser modules. The license is retained in `dist/vendor/LICENSE`.
 
+## GitHub and Vercel
+
+Source repository: https://github.com/AtomicWorks/form-gallery (private).
+
+`vercel.json` configures a static deployment from `dist/`, with dependency installation skipped because the browser modules are vendored. `npm run build` verifies local assets and points social-preview metadata to the Vercel production hostname when its deployment environment supplies one. `npm run check` checks JavaScript syntax.
+
+Import this repository into Vercel with the repository root as the root directory. The framework preset is Other; the configuration supplies the build command and output directory. No application secrets or environment variables are required. Alternatively, use `vercel --prod` from this directory after signing in and linking the project.
+
+Local Vercel settings, environment files, and QA screenshots are excluded from Git. The `.vercelignore` file also excludes Sites-specific metadata from Vercel uploads.
+
 ## Experience
 
 - Three original procedural sculptures: Fold, Void, and Tension.
