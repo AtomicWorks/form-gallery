@@ -28,7 +28,8 @@ for(let strand=0;strand<19;strand++){
 
 let renderer,scene,camera,objects,materials,envWarm,envCool,pmrem;
 let current=0,inInspector=false,paused=reducedMotion.matches,heroVisible=true,dirty=true,wireframe=false;
-let pointer=null,dragDistance=0,lastTrigger=null,lastTime=0;
+let pointer=null,lastTrigger=null,lastTime=0;
+const heroLabel='Interactive Fold sculpture. Drag or use arrow keys to rotate. Spins automatically when released. Home resets the view.';
 const baseRotation=new THREE.Euler();
 const environments=[];
 
@@ -131,14 +132,14 @@ function showInspector(index,trigger){
 }
 function returnToHero(){
   if(!inInspector)return;
-  inInspector=false;document.body.classList.remove('modal-open');heroHost.prepend(renderer.domElement);renderer.domElement.tabIndex=-1;renderer.domElement.setAttribute('aria-label','Slowly rotating Fold sculpture');setObject(0);resize();lastTrigger?.focus({preventScroll:true});
+  inInspector=false;document.body.classList.remove('modal-open');heroHost.prepend(renderer.domElement);renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label',heroLabel);setObject(0);resize();lastTrigger?.focus({preventScroll:true});
 }
 
 function animate(time){
   requestAnimationFrame(animate);
   const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
   if(document.hidden||(!heroVisible&&!inInspector))return;
-  if(!inInspector&&!paused){objects[0].rotation.y+=dt*.095;dirty=true;}
+  if(!inInspector&&!paused&&!pointer){objects[0].rotation.y+=dt*.095;dirty=true;}
   if(dirty){renderer.render(scene,camera);dirty=false;}
 }
 
@@ -155,7 +156,7 @@ async function init(){
   try{
     renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'high-performance'});
     renderer.setClearColor(0x111210,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
-    renderer.domElement.setAttribute('role','img');renderer.domElement.setAttribute('aria-label','Slowly rotating Fold sculpture');renderer.domElement.tabIndex=-1;
+    renderer.domElement.setAttribute('role','img');renderer.domElement.setAttribute('aria-label',heroLabel);renderer.domElement.tabIndex=0;
     heroHost.prepend(renderer.domElement);scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(0,0,5.05);
     pmrem=new THREE.PMREMGenerator(renderer);envWarm=studioEnvironment();envCool=studioEnvironment(true);scene.environment=envWarm;scene.environmentIntensity=1.25;
     materials={
@@ -176,14 +177,29 @@ async function init(){
     $('#reset-view').addEventListener('click',()=>{objects[current].rotation.copy(baseRotation);dirty=true;announce('View reset');});
     $('#wire-toggle').addEventListener('click',()=>{wireframe=!wireframe;Object.values(materials).forEach(m=>m.wireframe=wireframe);$('#wire-toggle').setAttribute('aria-pressed',String(wireframe));$('#wire-toggle').innerHTML=`${wireframe?'View surface':'View wireframe'} <span>⌗</span>`;dirty=true;announce(wireframe?'Wireframe enabled':'Surface restored');});
     const canvas=renderer.domElement;
-    canvas.addEventListener('pointerdown',e=>{if(!inInspector)return;pointer={id:e.pointerId,x:e.clientX,y:e.clientY};dragDistance=0;canvas.setPointerCapture(e.pointerId);});
-    canvas.addEventListener('pointermove',e=>{if(!pointer||!inInspector||pointer.id!==e.pointerId)return;const dx=e.clientX-pointer.x,dy=e.clientY-pointer.y;dragDistance+=Math.abs(dx)+Math.abs(dy);objects[current].rotation.y+=dx*.008;objects[current].rotation.x+=dy*.008;pointer.x=e.clientX;pointer.y=e.clientY;dirty=true;});
-    const release=()=>{pointer=null;};canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);canvas.addEventListener('lostpointercapture',release);
-    canvas.addEventListener('keydown',e=>{if(!inInspector)return;const o=objects[current];if(e.key==='ArrowLeft')o.rotation.y-=.12;else if(e.key==='ArrowRight')o.rotation.y+=.12;else if(e.key==='ArrowUp')o.rotation.x-=.12;else if(e.key==='ArrowDown')o.rotation.x+=.12;else if(e.key==='Home')o.rotation.copy(baseRotation);else return;e.preventDefault();dirty=true;});
+    canvas.addEventListener('pointerdown',e=>{
+      if(!e.isPrimary||e.button!==0||pointer)return;
+      pointer={id:e.pointerId,x:e.clientX,y:e.clientY};
+      canvas.setPointerCapture(e.pointerId);canvas.classList.add('is-dragging');
+    });
+    canvas.addEventListener('pointermove',e=>{
+      if(!pointer||pointer.id!==e.pointerId)return;
+      const dx=e.clientX-pointer.x,dy=e.clientY-pointer.y;
+      objects[current].rotation.y+=dx*.008;objects[current].rotation.x+=dy*.008;
+      pointer.x=e.clientX;pointer.y=e.clientY;dirty=true;
+    });
+    const release=e=>{
+      if(e?.pointerId!==undefined&&pointer&&e.pointerId!==pointer.id)return;
+      const id=pointer?.id;pointer=null;canvas.classList.remove('is-dragging');
+      if(id!==undefined&&canvas.hasPointerCapture(id))canvas.releasePointerCapture(id);
+    };
+    canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);canvas.addEventListener('lostpointercapture',release);
+    window.addEventListener('blur',()=>release());
+    canvas.addEventListener('keydown',e=>{const o=objects[current];if(e.key==='ArrowLeft')o.rotation.y-=.12;else if(e.key==='ArrowRight')o.rotation.y+=.12;else if(e.key==='ArrowUp')o.rotation.x-=.12;else if(e.key==='ArrowDown')o.rotation.x+=.12;else if(e.key==='Home')o.rotation.copy(baseRotation);else return;e.preventDefault();dirty=true;});
     canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();paused=true;status.textContent='3D paused — reload the page to restore the exhibition';if(dialog.open)dialog.close();});
     new ResizeObserver(resize).observe(heroHost);new ResizeObserver(resize).observe(stage);
     new IntersectionObserver(entries=>{heroVisible=entries[0].isIntersecting;if(heroVisible)dirty=true;}).observe(heroHost);
-    document.addEventListener('visibilitychange',()=>{dirty=true;});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)release();dirty=true;});
     updateMotionButton();requestAnimationFrame(animate);
   }catch(error){fallback(error);}
 }

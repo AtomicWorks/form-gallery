@@ -10,6 +10,7 @@ The checked-in `dist/` directory is the complete static website. No build step o
 ## Experience
 
 - Three original procedural sculptures: Fold, Void, and Tension.
+- Drag the hero sculpture to rotate it directly; automatic rotation pauses while held and resumes on release, unless manually paused or reduced motion is enabled. Vertical touch scrolling remains available on the hero.
 - Oversized typography, dark surfaces, restrained green accents, and custom studio reflections.
 - Object inspector with pointer and keyboard rotation, chrome / ceramic / glass materials, warm / cool environments, wireframe, reset, and previous / next navigation.
 - Native modal focus containment, Escape dismissal, restored trigger focus, reduced-motion support, and a rotation pause control.

@@ -7,3 +7,6 @@
 @media(min-width:651px){.scene-tools{left:15%;right:auto}}
 
 .sculpture-fallback{object-fit:contain;opacity:1}
+.hero-render canvas{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.hero-render canvas.is-dragging,.inspect-stage canvas.is-dragging{cursor:grabbing}
+.scene-tools>span{pointer-events:none}
