@@ -11,6 +11,8 @@ The checked-in `dist/` directory is the complete static website. No build step o
 
 Source repository: https://github.com/AtomicWorks/form-gallery (private).
 
+Production: https://form-gallery.vercel.app
+
 `vercel.json` configures a static deployment from `dist/`, with dependency installation skipped because the browser modules are vendored. `npm run build` verifies local assets and points social-preview metadata to the Vercel production hostname when its deployment environment supplies one. `npm run check` checks JavaScript syntax.
 
 Import this repository into Vercel with the repository root as the root directory. The framework preset is Other; the configuration supplies the build command and output directory. No application secrets or environment variables are required. Alternatively, use `vercel --prod` from this directory after signing in and linking the project.
