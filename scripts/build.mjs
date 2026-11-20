@@ -14,6 +14,6 @@ if(host){
   await fs.writeFile(entry,html);
 }
 const assets=new Set([...html.matchAll(/(?:src|href)="(\/[^"#]*)"/g)].map(m=>m[1]));
-assets.add('/vendor/three.module.js');assets.add('/vendor/three.core.js');
+assets.add('/vendor/three.module.js');assets.add('/sculptures.js');assets.add('/vendor/three.core.js');
 for(const asset of assets){await fs.access(path.join(dist,asset.slice(1)));}
 console.log(`FORM ready: index.html and ${assets.size} local assets verified.`);

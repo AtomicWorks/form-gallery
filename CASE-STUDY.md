@@ -10,11 +10,11 @@ An oversized ivory wordmark establishes scale. Near-black surfaces let studio re
 
 ## Three studies
 
-Fold sweeps a flattened elliptical profile around a continuous knotted path. Its polished surface traces the changing curvature through reflections.
+Fibre projects the Hopf fibration into three dimensions: two nested tori of circles, 23 in all, each linked through every other. In polished chrome, every ring reflects its neighbours.
 
-Void modifies the radius and thickness of a ring to create a soft, irregular vessel. The central opening becomes part of the composition.
+Bloom places 200 cupped petals by the golden angle, the same rule as a sunflower's seeds. They rise upright at the bud and splay open toward the rim, in a glazed ceramic finish.
 
-Tension places two curved loops in an interlocking arrangement. A lightly tinted transmissive material explores overlapping surfaces and highlights.
+Paradox is a Klein bottle: its neck bends back and passes through its own wall, giving a single surface with no inside. Clear, lightly tinted glass shows the crossing. A dark backdrop drawn only into the refraction pass keeps the glass clear on a transparent canvas.
 
 ## Interaction
 
